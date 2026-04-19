@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>TRX ULTIMATE</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:radial-gradient(circle,#0a0014,#1a0033,#2b0057);
+color:white;
+}
+
+.sidebar{
+position:fixed;
+width:220px;
+height:100%;
+background:#120022;
+box-shadow:0 0 20px #c084ff;
+}
+
+.sidebar button{
+width:90%;
+margin:12px auto;
+padding:15px;
+display:block;
+background:#2b0057;
+border:none;
+color:white;
+border-radius:10px;
+cursor:pointer;
+}
+
+.content{
+margin-left:230px;
+padding:20px;
+}
+
+.page{display:none;}
+.active{display:block;}
+
+textarea,input{
+width:80%;
+padding:12px;
+margin:10px;
+background:#1a0033;
+border:none;
+color:white;
+border-radius:10px;
+}
+
+button.action{
+background:#c084ff;
+padding:12px 20px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+<button onclick="openPage('script')">📜 سكربت</button>
+<button onclick="openPage('ai')">🤖 AI</button>
+<button onclick="openPage('upload')">🔗 رفع</button>
+</div>
+
+<div class="content">
+
+<div id="script" class="page active">
+<h2>إنشاء سكربت</h2>
+<textarea id="scriptInput"></textarea><br>
+<button class="action" onclick="makeScript()">إنشاء</button>
+<div id="out1"></div>
+</div>
+
+<div id="ai" class="page">
+<h2>ذكاء اصطناعي</h2>
+<input id="aiInput"><br>
+<button class="action" onclick="askAI()">إرسال</button>
+<div id="out2"></div>
+</div>
+
+<div id="upload" class="page">
+<h2>رفع سكربت</h2>
+<textarea id="uploadCode"></textarea><br>
+<button class="action" onclick="upload()">رفع</button>
+<div id="out3"></div>
+</div>
+
+</div>
+
+<script>
+function openPage(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+
+function makeScript(){
+out1.innerText = `loadstring(game:HttpGet("YOUR_LINK"))()`;
+}
+
+async function askAI(){
+out2.innerText="جاري...";
+let r = await fetch("/api/ai",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({msg:aiInput.value})});
+let d = await r.json();
+out2.innerText=d.reply;
+}
+
+async function upload(){
+out3.innerText="جاري الرفع...";
+let r = await fetch("/api/upload",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:uploadCode.value})});
+let d = await r.json();
+
+out3.innerText =
+`${d.url}
+
+loadstring(game:HttpGet("${d.url}"))()`;
+}
+</script>
+
+</body>
+</html>
